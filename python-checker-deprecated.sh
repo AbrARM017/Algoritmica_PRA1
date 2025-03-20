@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# Configuración
+PYTHON_PROGRAM="practica_1.py"
+TESTS_DIR="tests"
+TEMP_OUTPUT="output.txt"
+TOTAL_TESTS=0
+PASSED_TESTS=0
+
+# Limpieza inicial
+rm -f $TEMP_OUTPUT
+
+echo "Iniciando tests para la solución Python..."
+echo "-----------------------------------------"
+
+# Buscar tests desde 1-8 hasta 0-1 (ajustar rangos según necesidad)
+for x in {1..8}; do
+    for y in {0..1}; do
+        INPUT_FILE="$TESTS_DIR/input${x}-${y}.txt"
+        EXPECTED_OUTPUT="$TESTS_DIR/output${x}-${y}.txt"
+        
+        if [ -f "$INPUT_FILE" ] && [ -f "$EXPECTED_OUTPUT" ]; then
+            ((TOTAL_TESTS++))
+            
+            # Ejecutar programa y capturar salida
+            python3 $PYTHON_PROGRAM "$INPUT_FILE" > $TEMP_OUTPUT 2>&1
+            
+            # Verificar resultado
+            if diff -w $TEMP_OUTPUT $EXPECTED_OUTPUT &>/dev/null; then
+                echo "✅ Test $x-$y: PASS"
+                ((PASSED_TESTS++))
+            else
+                echo "❌ Test $x-$y: FAIL"
+                echo "   Diferencias:"
+                diff -w $TEMP_OUTPUT $EXPECTED_OUTPUT | sed 's/^/   /'
+            fi
+        fi
+    done
+done
+
+echo "-----------------------------------------"
+echo "Resultados: $PASSED_TESTS/$TOTAL_TESTS tests superados"
+rm -f $TEMP_OUTPUT
